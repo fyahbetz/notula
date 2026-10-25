@@ -1,0 +1,28 @@
+# Netlify HTTP headers. Netlify reads this file and does not publish it.
+
+# Every file
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()
+  Cross-Origin-Opener-Policy: same-origin
+
+# Pages: same policy as the <meta> tag in the HTML, plus frame-ancestors (only possible as a header),
+# so no other site can embed Notula in a frame.
+# Not applied to sw.js on purpose: the offline worker needs to fetch the site's own files.
+/
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; worker-src 'self'; manifest-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'
+  X-Frame-Options: DENY
+/index.html
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; worker-src 'self'; manifest-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'
+  X-Frame-Options: DENY
+/about.html
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; worker-src 'self'; manifest-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'
+  X-Frame-Options: DENY
+/about
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; worker-src 'self'; manifest-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'
+  X-Frame-Options: DENY
+
+# The offline worker must always be checked for updates
+/sw.js
+  Cache-Control: no-cache
