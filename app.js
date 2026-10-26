@@ -270,6 +270,7 @@ async function render() {
     fillNote(el, note);
     el.dataset.id = note.id;
     el.tabIndex = 0;
+    el.querySelector('.done').addEventListener('click', () => toggleDone(note));
     el.querySelector('.edit').addEventListener('click', () => startEdit(note));
     el.querySelector('.delete').addEventListener('click', () => removeNote(note));
     el.addEventListener('click', (e) => {
@@ -296,6 +297,19 @@ function fillNote(el, note) {
   time.title = note.updatedAt && note.updatedAt !== note.createdAt
     ? 'Edited: ' + dateFmt.format(new Date(note.updatedAt))
     : '';
+  el.classList.toggle('is-done', !!note.done);
+  const done = el.querySelector('.done');
+  done.setAttribute('aria-pressed', String(!!note.done));
+  done.title = note.done ? 'Mark as not done' : 'Mark as done';
+  done.setAttribute('aria-label', done.title);
+}
+
+// Done notes stay on the board, blurred, so the others stand out
+async function toggleDone(note) {
+  const updated = { ...note, done: !note.done, updatedAt: new Date().toISOString() };
+  if (!updated.done) delete updated.done;
+  await putNote(db, updated);
+  render();
 }
 
 // ---------- Focus view: one note enlarged in the middle of the screen ----------
@@ -872,6 +886,7 @@ fileInput.addEventListener('change', async () => {
         createdAt: n.createdAt,
         updatedAt: typeof n.updatedAt === 'string' ? n.updatedAt : n.createdAt,
         ...(Number.isFinite(n.order) ? { order: n.order } : {}),
+        ...(n.done === true ? { done: true } : {}),
       };
       const old = existing.get(note.id);
       // On conflict, the most recently edited version wins
